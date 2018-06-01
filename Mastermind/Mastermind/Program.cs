@@ -23,6 +23,11 @@ namespace Mastermind
         /// </summary>
         private static bool codeCracked = false;
 
+        /// <summary>
+        /// Variable to store the most recent guess to crack the code submitted by Player 2.
+        /// </summary>
+        private static int[] playerTwosMostRecentGuess;
+
         static void Main(string[] args)
         {
             // Take players one's code for player two to break.
@@ -35,7 +40,7 @@ namespace Mastermind
                 string[] correctAnswer = new string[4] { "BLACK", "BLACK", "BLACK", "BLACK" };
                 string[] userGuess = TakeGuess();
 
-                codeCracked = (userGuess == correctAnswer);
+                codeCracked = CompareArrays(playerTwosMostRecentGuess, playerOnesCode);
 
                 if (codeCracked)
                 {
@@ -46,13 +51,13 @@ namespace Mastermind
                 else
                 {
                     // Player two's guess was incorrect.
+                    remainingGuesses--;
                     Console.WriteLine("\nYour guess was incorrect. You have " + remainingGuesses.ToString() + " lives remaining. Try again.\n");
                     Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
-                    remainingGuesses--;
                 }
             }
 
-            if (remainingGuesses >= 0)
+            if (codeCracked)
             {
                 // Player two has cracked the code.
                 PlayerTwoWins();
@@ -138,7 +143,12 @@ namespace Mastermind
                 guess = ParseIntArray(Console.ReadLine());
             }
 
-            if (guess == playerOnesCode)
+            playerTwosMostRecentGuess = guess;
+
+            // Compare guess with code to be cracked.
+            bool match = CompareArrays(guess, playerOnesCode);
+
+            if (match)
             {
                 return new string[4] { "BLACK", "BLACK", "BLACK", "BLACK" };
             }
@@ -155,6 +165,27 @@ namespace Mastermind
                 // Return result.
                 return pegs;
             }
+        }
+
+        /// <summary>
+        /// Method to take two integer arrays and compare each element against each other to derive a match.
+        /// </summary>
+        /// <param name="firstArray"></param>
+        /// <param name="secondArray"></param>
+        /// <returns></returns>
+        static bool CompareArrays(int[] firstArray, int[] secondArray)
+        {
+            int arrayLengths = firstArray.Length;
+
+            for (int i = 0; i < arrayLengths; i++)
+            {
+                if (firstArray[i] != secondArray[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
