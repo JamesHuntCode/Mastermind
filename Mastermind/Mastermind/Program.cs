@@ -32,7 +32,7 @@ namespace Mastermind
             // Begin taking guesses from player two.
             while (!codeCracked)
             {
-                if (remainingGuesses == 0)
+                if (remainingGuesses >= 0)
                 {
                     string[] correctAnswer = { "BLACK", "BLACK", "BLACK", "BLACK" };
                     string[] userGuess = TakeGuess();
@@ -42,24 +42,33 @@ namespace Mastermind
                     if (codeCracked)
                     {
                         // Player two has cracked the code.
+                        Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
                         break;
                     }
                     else
                     {
                         // Player two's guess was incorrect.
-                        Console.WriteLine();
+                        Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
                         remainingGuesses--;
                     }
                 }
                 else
                 {
                     // Player two has run out of lives.
-                    PlayerOneWins();
+                    break;
                 }
             }
 
-            // Player two has cracked the code.
-            PlayerTwoWins();
+            if (remainingGuesses >= 0)
+            {
+                // Player two has cracked the code.
+                PlayerTwoWins();
+            }
+            else
+            {
+                // Player two has failed to crack the code.
+                PlayerOneWins();
+            }
         }
 
         /// <summary>
@@ -78,7 +87,7 @@ namespace Mastermind
             
             while (userInput == null)
             {
-                Console.WriteLine("\nOops! Please input 4 non-negative integers, each below 10 and seperated by a comma.");
+                Console.WriteLine("\nOops! Please input 4 non-negative integers, each below 10 and seperated by a comma:\n");
                 userInput = TakeCodeToCrack("\n\n");
             }
 
@@ -129,6 +138,12 @@ namespace Mastermind
             // Get guess from Player two.
             Console.WriteLine("\n\nPlayer 2 - What is your guess?\n");
             int[] guess = ParseIntArray(Console.ReadLine());
+
+            while (guess == null)
+            {
+                Console.WriteLine("\nOops! Please input 4 non-negative integers, each below 10 and seperated by a comma:\n");
+                guess = ParseIntArray(Console.ReadLine());
+            }
 
             // Construct pegs based on guess.
             string[] pegs = new string[5];
