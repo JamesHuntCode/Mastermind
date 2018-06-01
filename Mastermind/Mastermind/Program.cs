@@ -159,7 +159,7 @@ namespace Mastermind
 
                 for (int i = 0; i < guess.Length; i++)
                 {
-
+                    // Implement algorithm here to check if, a) a number appears in both arrays & b) it appears at the same index in both arrays.
                 }
 
                 // Return result.
@@ -179,12 +179,15 @@ namespace Mastermind
 
             for (int i = 0; i < arrayLengths; i++)
             {
+                // If any single element is not the same between the two arrays, return false.
                 if (firstArray[i] != secondArray[i])
                 {
+                    // No match.
                     return false;
                 }
             }
 
+            // All elements match up perfectly - there is a match.
             return true;
         }
 
