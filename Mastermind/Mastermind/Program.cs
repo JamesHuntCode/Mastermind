@@ -18,20 +18,54 @@ namespace Mastermind
         /// </summary>
         private static int remainingGuesses = 10;
 
+        /// <summary>
+        /// Boolean value to indicate if Player 2 has cracked the code.
+        /// </summary>
+        private static bool codeCracked = false;
+
         static void Main(string[] args)
         {
-            // Start game - Take players one's code.
+            // Take players one's code for player two to break.
             playerOnesCode = TakeCodeToCrack();
             Console.WriteLine("\nGreat! Your input has been logged.");
 
             // Begin taking guesses from player two.
+            while (!codeCracked)
+            {
+                if (remainingGuesses == 0)
+                {
+                    string[] correctAnswer = { "BLACK", "BLACK", "BLACK", "BLACK" };
+                    string[] userGuess = TakeGuess();
 
+                    codeCracked = (userGuess == correctAnswer);
+
+                    if (codeCracked)
+                    {
+                        // Player two has cracked the code.
+                        break;
+                    }
+                    else
+                    {
+                        // Player two's guess was incorrect.
+                        Console.WriteLine();
+                        remainingGuesses--;
+                    }
+                }
+                else
+                {
+                    // Player two has run out of lives.
+                    PlayerOneWins();
+                }
+            }
+
+            // Player two has cracked the code.
+            PlayerTwoWins();
         }
 
         /// <summary>
         /// Method to take the code to crack from Player 1.
         /// </summary>
-        /// /// <param name="offset"></param>
+        /// <param name="offset"></param>
         /// <returns></returns>
         static int[] TakeCodeToCrack(string offset = null)
         {
@@ -89,11 +123,56 @@ namespace Mastermind
         /// <summary>
         /// Method to take a guess input from Player 2 and check if correct.
         /// </summary>
-        /// <param name="guess"></param>
         /// <returns></returns>
-        static bool TakeGuess(int[] guess)
+        static string[] TakeGuess()
         {
-            return false;
+            // Get guess from Player two.
+            Console.WriteLine("\n\nPlayer 2 - What is your guess?\n");
+            int[] guess = ParseIntArray(Console.ReadLine());
+
+            // Construct pegs based on guess.
+            string[] pegs = new string[5];
+
+            for (int i = 0; i < guess.Length; i++)
+            {
+                for (int j = 0; j < playerOnesCode.Length; j++)
+                {
+                    if ((guess[i] == playerOnesCode[i]) && (i == j))
+                    {
+                        // Number was in the code and in the correct position.
+                        pegs[i] = "BLACK";
+                    }
+                    else if (guess[i] == playerOnesCode[i])
+                    {
+                        // Number was in the code but not in the correct position.
+                        pegs[i] = "WHITE";
+                    }
+                    else
+                    {
+                        // Number was not in the code at all.
+                        pegs[i] = "BLANK";
+                    }
+                }
+            }
+
+            // Return result.
+            return pegs;
+        }
+
+        /// <summary>
+        /// Method called when the Player 2 has run out of attempts to crack the code.
+        /// </summary>
+        static void PlayerOneWins()
+        {
+            Console.WriteLine("\n\nPLAYER ONE WINS!\n\nPLAYER TWO HAS RUN OUT OF GUESSES.");
+        }
+
+        /// <summary>
+        /// Method called when Player 2 successfully cracked the code.
+        /// </summary>
+        static void PlayerTwoWins()
+        {
+            Console.WriteLine("\n\nPLAYER TWO WINS!\n\nPLAYER TWO HAS CRACKED THE CODE.");
         }
     }
 }
