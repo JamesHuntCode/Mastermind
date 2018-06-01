@@ -11,7 +11,7 @@ namespace Mastermind
         /// <summary>
         /// Code set by Player 1 for Player 2 to crack.
         /// </summary>
-        private static int[] playerOnesCode = null;
+        private static int[] playerOnesCode;
 
         /// <summary>
         /// Guesses remaining for Player 2 to correctly crack Player One's code.
@@ -30,32 +30,25 @@ namespace Mastermind
             Console.WriteLine("\nGreat! Your input has been logged.");
 
             // Begin taking guesses from player two.
-            while (!codeCracked)
-            {
-                if (remainingGuesses >= 0)
+            while ((!codeCracked) && (remainingGuesses >= 0))
+            {        
+                string[] correctAnswer = new string[4] { "BLACK", "BLACK", "BLACK", "BLACK" };
+                string[] userGuess = TakeGuess();
+
+                codeCracked = (userGuess == correctAnswer);
+
+                if (codeCracked)
                 {
-                    string[] correctAnswer = { "BLACK", "BLACK", "BLACK", "BLACK" };
-                    string[] userGuess = TakeGuess();
-
-                    codeCracked = (userGuess == correctAnswer);
-
-                    if (codeCracked)
-                    {
-                        // Player two has cracked the code.
-                        Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
-                        break;
-                    }
-                    else
-                    {
-                        // Player two's guess was incorrect.
-                        Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
-                        remainingGuesses--;
-                    }
+                    // Player two has cracked the code.
+                    Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
+                    codeCracked = true;
                 }
                 else
                 {
-                    // Player two has run out of lives.
-                    break;
+                    // Player two's guess was incorrect.
+                    Console.WriteLine("\nYour guess was incorrect. You have " + remainingGuesses.ToString() + " lives remaining. Try again.\n");
+                    Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
+                    remainingGuesses--;
                 }
             }
 
@@ -113,7 +106,7 @@ namespace Mastermind
                 // Validate all element values are less than 10.
                 for (int i = 0; i < parsedArray.Length; i++)
                 {
-                    if (parsedArray[i] >= 10)
+                    if ((parsedArray[i] >= 10) || (parsedArray[i] < 0))
                     {
                         return null;
                     }
@@ -145,33 +138,23 @@ namespace Mastermind
                 guess = ParseIntArray(Console.ReadLine());
             }
 
-            // Construct pegs based on guess.
-            string[] pegs = new string[5];
-
-            for (int i = 0; i < guess.Length; i++)
+            if (guess == playerOnesCode)
             {
-                for (int j = 0; j < playerOnesCode.Length; j++)
-                {
-                    if ((guess[i] == playerOnesCode[i]) && (i == j))
-                    {
-                        // Number was in the code and in the correct position.
-                        pegs[i] = "BLACK";
-                    }
-                    else if (guess[i] == playerOnesCode[i])
-                    {
-                        // Number was in the code but not in the correct position.
-                        pegs[i] = "WHITE";
-                    }
-                    else
-                    {
-                        // Number was not in the code at all.
-                        pegs[i] = "BLANK";
-                    }
-                }
+                return new string[4] { "BLACK", "BLACK", "BLACK", "BLACK" };
             }
+            else
+            {
+                // Construct pegs based on guess.
+                string[] pegs = new string[4];
 
-            // Return result.
-            return pegs;
+                for (int i = 0; i < guess.Length; i++)
+                {
+
+                }
+
+                // Return result.
+                return pegs;
+            }
         }
 
         /// <summary>
@@ -179,7 +162,8 @@ namespace Mastermind
         /// </summary>
         static void PlayerOneWins()
         {
-            Console.WriteLine("\n\nPLAYER ONE WINS!\n\nPLAYER TWO HAS RUN OUT OF GUESSES.");
+            Console.WriteLine("\n\nPLAYER ONE WINS!\n\nPLAYER TWO HAS RUN OUT OF GUESSES.\n\n");
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -187,7 +171,8 @@ namespace Mastermind
         /// </summary>
         static void PlayerTwoWins()
         {
-            Console.WriteLine("\n\nPLAYER TWO WINS!\n\nPLAYER TWO HAS CRACKED THE CODE.");
+            Console.WriteLine("\n\nPLAYER TWO WINS!\n\nPLAYER TWO HAS CRACKED THE CODE.\n\n");
+            Console.ReadKey();
         }
     }
 }
