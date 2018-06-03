@@ -143,27 +143,58 @@ namespace Mastermind
             }
 
             playerTwosMostRecentGuess = guess;
+           
+            // Construct pegs based on guess.
+            string[] pegs = new string[4];
 
-            // Compare guess with code to be cracked.
-            bool match = CompareArrays(guess, playerOnesCode);
-
-            if (match)
+            for (int i = 0; i < guess.Length; i++)
             {
-                return new string[4] { "BLACK", "BLACK", "BLACK", "BLACK" };
-            }
-            else
-            {
-                // Construct pegs based on guess.
-                string[] pegs = new string[4];
-
-                for (int i = 0; i < guess.Length; i++)
+                // Check for a black peg.
+                if (guess[i] == playerOnesCode[i])
                 {
-                    
+                    pegs[i] = "BLACK";                  
                 }
+                else
+                {
+                    // Check for a white peg.
+                    bool occurs = false;
+                    int timesOccured = 0;
+      
+                    // Check times the number has occured in player two's guess.
+                    for (int j = 0; j < playerOnesCode.Length; j++)
+                    {
+                        if ((guess[i] == playerOnesCode[j]))
+                        {
+                            timesOccured++;
+                            if (!occurs) occurs = true;
+                        }
+                    }
 
-                // Return result.
-                return pegs;
+                    // Check how many times the number specified above appears in player one's code.
+                    int limit = 0;
+
+                    for (int k = 0; k < playerOnesCode.Length; k++)
+                    {
+                        if ((guess[i] == playerOnesCode[k]))
+                        {
+                            limit++;
+                        }
+                    }
+
+                    // Assign peg based on result.
+                    if (occurs && (limit >= timesOccured))
+                    {
+                        pegs[i] = "WHITE";
+                    }
+                    else
+                    {
+                        pegs[i] = "NULL";
+                    }
+                }
             }
+
+            // Return result.
+            return pegs;
         }
 
         /// <summary>
