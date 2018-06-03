@@ -37,7 +37,6 @@ namespace Mastermind
             // Begin taking guesses from player two.
             while ((!codeCracked) && (remainingGuesses >= 0))
             {        
-                string[] correctAnswer = new string[4] { "BLACK", "BLACK", "BLACK", "BLACK" };
                 string[] userGuess = TakeGuess();
 
                 codeCracked = CompareArrays(playerTwosMostRecentGuess, playerOnesCode);
@@ -53,7 +52,7 @@ namespace Mastermind
                     // Player two's guess was incorrect.
                     remainingGuesses--;
                     Console.WriteLine("\nYour guess was incorrect. You have " + remainingGuesses.ToString() + " lives remaining. Try again.\n");
-                    Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
+                    Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n\n");
                 }
             }
 
@@ -159,7 +158,7 @@ namespace Mastermind
 
                 for (int i = 0; i < guess.Length; i++)
                 {
-                    // Implement algorithm here to check if, a) a number appears in both arrays & b) it appears at the same index in both arrays.
+                    
                 }
 
                 // Return result.
