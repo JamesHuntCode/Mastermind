@@ -20,6 +20,26 @@ namespace Mastermind
         /// Determine if list head has been set or remains unused.
         /// </summary>
         public bool Initialized { get; set; } = false;
+
+        /// <summary>
+        /// Method to add a new node to the end of the linked list.
+        /// </summary>
+        /// <param name="newNode"></param>
+        public void AddNode(Node newNode)
+        {
+            Node currentNode = ListHead;
+
+            while (currentNode.NextNode != null)
+            {
+                if (currentNode.NextNode == null)
+                {
+                    currentNode.NextNode = newNode;
+                    newNode.NextNode = null;
+                }
+
+                currentNode = currentNode.NextNode;
+            }
+        }
     }
 
     /// <summary>
@@ -35,7 +55,7 @@ namespace Mastermind
         /// <summary>
         /// The next Node value in the linked list.
         /// </summary>
-        public Node NextNode { get; set; } = null;
+        public Node NextNode = null;
     }
 
     /// <summary>
@@ -92,8 +112,6 @@ namespace Mastermind
                     // Player two has cracked the code.
                     Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
                     codeCracked = true;
-
-
                 }
                 else
                 {
@@ -104,15 +122,20 @@ namespace Mastermind
                 }
             }
 
+            // Push guess to linked list of guesses.
+            Node guessNode = new Node();
+            guessNode.Data = playerTwosMostRecentGuess;
+            previousGuesses.AddNode(guessNode);
+
             if (codeCracked)
             {
                 // Player two has cracked the code.
-                PlayerTwoWins();
+                PlayerTwoWins(previousGuesses);
             }
             else
             {
                 // Player two has failed to crack the code.
-                PlayerOneWins();
+                PlayerOneWins(previousGuesses);
             }
         }
 
@@ -272,28 +295,28 @@ namespace Mastermind
         /// <summary>
         /// Method called when the Player 2 has run out of attempts to crack the code.
         /// </summary>
-        static void PlayerOneWins()
+        static void PlayerOneWins(LinkedList allGuesses)
         {
             Console.WriteLine("\n\nPLAYER ONE WINS!\n\nPLAYER TWO HAS RUN OUT OF GUESSES.\n\n");
             Console.ReadKey();
 
             // Write out all guesses made by player two from the linked list.
             Console.WriteLine("Here are the guesses you made throughout the game:\n\n");
-            Console.WriteLine(FormatGuesses(ViewAllGuesses()));
+            Console.WriteLine(FormatGuesses(ObtainGuesses(allGuesses)));
             Console.ReadKey();
         }
 
         /// <summary>
         /// Method called when Player 2 successfully cracked the code.
         /// </summary>
-        static void PlayerTwoWins()
+        static void PlayerTwoWins(LinkedList allGuesses)
         {
             Console.WriteLine("\n\nPLAYER TWO WINS!\n\nPLAYER TWO HAS CRACKED THE CODE.\n\n");
             Console.ReadKey();
 
             // Write out all guesses made by player two from the linked list.
             Console.WriteLine("Here are the guesses you made throughout the game:\n\n");
-            Console.WriteLine(FormatGuesses(ViewAllGuesses()));
+            Console.WriteLine(FormatGuesses(ObtainGuesses(allGuesses)));
             Console.ReadKey();
         }
 
@@ -301,9 +324,24 @@ namespace Mastermind
         /// Method to traverse linked list and return out all of the guesses made by Player 2.
         /// </summary>
         /// <returns></returns>
-        static int[][] ViewAllGuesses()
+        static List<int[]> ObtainGuesses(LinkedList ListStructure)
         {
-            return new int[1][];
+            List<int[]> guesses = new List<int[]>();
+
+            // Get starting node.
+            Node currentNode = ListStructure.ListHead;
+
+            // Iterate through all nodes and save values.
+            while (currentNode.NextNode != null)
+            {
+                // Fetch data.
+                guesses.Add(currentNode.Data);
+
+                // Update current node.
+                currentNode = currentNode.NextNode;
+            }
+
+            return guesses;
         }
 
         /// <summary>
@@ -311,9 +349,21 @@ namespace Mastermind
         /// </summary>
         /// <param name="guesses"></param>
         /// <returns></returns>
-        static string FormatGuesses(int[][] guesses)
+        static string FormatGuesses(List<int[]> guesses)
         {
-            return "";
+            string formattedOutput = "";
+
+            for (int i = 0; i < guesses.Count; i++)
+            {
+                string formattedGuess = "";
+
+                for (int j = 0; j < guesses[i].Count(); j++)
+                {
+                    formattedGuess += guesses[i][j].ToString();
+                }
+            }
+
+            return formattedOutput;
         }
     }
 }
