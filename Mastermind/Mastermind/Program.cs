@@ -6,6 +6,41 @@ using System.Threading.Tasks;
 
 namespace Mastermind
 {
+    /// <summary>
+    /// Dynamically linked list data structure.
+    /// </summary>
+    class LinkedList
+    {
+        /// <summary>
+        /// List head.
+        /// </summary>
+        public Node ListHead = new Node();
+
+        /// <summary>
+        /// Determine if list head has been set or remains unused.
+        /// </summary>
+        public bool Initialized { get; set; } = false;
+    }
+
+    /// <summary>
+    /// Object used for storage inside the linked list data structure defined above.
+    /// </summary>
+    class Node
+    {
+        /// <summary>
+        /// Integer array used to hold value of player two guesses.
+        /// </summary>
+        public int[] Data { get; set; }
+
+        /// <summary>
+        /// The next Node value in the linked list.
+        /// </summary>
+        public Node NextNode { get; set; } = null;
+    }
+
+    /// <summary>
+    /// Main program space.
+    /// </summary>
     class Program
     {
         /// <summary>
@@ -34,6 +69,9 @@ namespace Mastermind
             playerOnesCode = TakeCodeToCrack();
             Console.WriteLine("\nGreat! Your input has been logged.");
 
+            // Configure Linked List.
+            LinkedList previousGuesses = new LinkedList();
+
             // Begin taking guesses from player two.
             while ((!codeCracked) && (remainingGuesses >= 0))
             {        
@@ -41,11 +79,21 @@ namespace Mastermind
 
                 codeCracked = CompareArrays(playerTwosMostRecentGuess, playerOnesCode);
 
+                // Start recording player twos's guesses in linked list.
+                if (!previousGuesses.Initialized)
+                {
+                    previousGuesses.ListHead.Data = playerTwosMostRecentGuess;
+                    previousGuesses.ListHead.NextNode = new Node();
+                    previousGuesses.Initialized = true;
+                }
+
                 if (codeCracked)
                 {
                     // Player two has cracked the code.
                     Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n");
                     codeCracked = true;
+
+
                 }
                 else
                 {
@@ -188,7 +236,7 @@ namespace Mastermind
                     }
                     else
                     {
-                        pegs[i] = "NULL";
+                        pegs[i] = "BLANK";
                     }
                 }
             }
@@ -228,6 +276,11 @@ namespace Mastermind
         {
             Console.WriteLine("\n\nPLAYER ONE WINS!\n\nPLAYER TWO HAS RUN OUT OF GUESSES.\n\n");
             Console.ReadKey();
+
+            // Write out all guesses made by player two from the linked list.
+            Console.WriteLine("Here are the guesses you made throughout the game:\n\n");
+            Console.WriteLine(FormatGuesses(ViewAllGuesses()));
+            Console.ReadKey();
         }
 
         /// <summary>
@@ -237,6 +290,30 @@ namespace Mastermind
         {
             Console.WriteLine("\n\nPLAYER TWO WINS!\n\nPLAYER TWO HAS CRACKED THE CODE.\n\n");
             Console.ReadKey();
+
+            // Write out all guesses made by player two from the linked list.
+            Console.WriteLine("Here are the guesses you made throughout the game:\n\n");
+            Console.WriteLine(FormatGuesses(ViewAllGuesses()));
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Method to traverse linked list and return out all of the guesses made by Player 2.
+        /// </summary>
+        /// <returns></returns>
+        static int[][] ViewAllGuesses()
+        {
+            return new int[1][];
+        }
+
+        /// <summary>
+        /// Method to format the integer arrays into string displayable within the console.
+        /// </summary>
+        /// <param name="guesses"></param>
+        /// <returns></returns>
+        static string FormatGuesses(int[][] guesses)
+        {
+            return "";
         }
     }
 }
