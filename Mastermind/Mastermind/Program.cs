@@ -38,13 +38,13 @@ namespace Mastermind
             {
                 while (currentNode.NextNode != null)
                 {
+                    currentNode = currentNode.NextNode;
+
                     if (currentNode.NextNode == null)
                     {
                         currentNode.NextNode = newNode;
                         newNode.NextNode = null;
                     }
-
-                    currentNode = currentNode.NextNode;
                 }
             }
         }
@@ -103,10 +103,6 @@ namespace Mastermind
             // Begin taking guesses from player two.
             while ((!codeCracked) && (remainingGuesses >= 0))
             {
-                string[] userGuess = TakeGuess();
-
-                codeCracked = CompareArrays(playerTwosMostRecentGuess, playerOnesCode);
-
                 // Start recording player twos's guesses in linked list.
                 if (!previousGuesses.Initialized)
                 {
@@ -114,6 +110,11 @@ namespace Mastermind
                     previousGuesses.ListHead.NextNode = null;
                     previousGuesses.Initialized = true;
                 }
+
+                // Get guess from player two.
+                string[] userGuess = TakeGuess();
+
+                codeCracked = CompareArrays(playerTwosMostRecentGuess, playerOnesCode);
 
                 if (codeCracked)
                 {
@@ -129,10 +130,10 @@ namespace Mastermind
                     Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n\n");
                 }
 
-                // Push most recent guess to linked list of guesses.
-                Node guessNode = new Node();
-                guessNode.Data = playerTwosMostRecentGuess;
-                previousGuesses.AddNode(guessNode);
+                // Add most recent guess to linked list of guesses.
+                Node newNode = new Node();
+                newNode.Data = playerTwosMostRecentGuess;
+                previousGuesses.AddNode(newNode);
             }
 
             if (codeCracked)
@@ -355,21 +356,7 @@ namespace Mastermind
         /// <returns></returns>
         static string FormatGuesses(List<int[]> guesses)
         {
-            List<string> formattedGuesses = new List<string>();
-
-            for (int i = 0; i < guesses.Count; i++)
-            {
-                List<string> str = new List<string>();
-
-                for (int j = 0; j < guesses[i].Length; j++)
-                {
-                    str.Add(guesses[i][j].ToString());
-                }
-
-                formattedGuesses.Add(String.Join("", str));
-            }
-
-            return String.Join("\n", formattedGuesses);
+            return guesses.Count.ToString();
         }
     }
 }
