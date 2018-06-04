@@ -12,14 +12,9 @@ namespace Mastermind
     class LinkedList
     {
         /// <summary>
-        /// List head.
+        /// Item at the front of the linked list.
         /// </summary>
-        public Node ListHead = new Node();
-
-        /// <summary>
-        /// Determine if list head has been set or remains unused.
-        /// </summary>
-        public bool Initialized { get; set; } = false;
+        public Node ListHead = null;
 
         /// <summary>
         /// Method to add a new node to the end of the linked list.
@@ -29,9 +24,14 @@ namespace Mastermind
         {
             Node currentNode = ListHead;
 
-            if (currentNode.NextNode == null)
+            if (ListHead == null)
             {
-                currentNode.NextNode = newNode;
+                ListHead = newNode;
+                ListHead.NextNode = null;
+            }
+            else if (ListHead.NextNode == null)
+            {
+                ListHead.NextNode = newNode;
                 newNode.NextNode = null;
             }
             else
@@ -58,12 +58,21 @@ namespace Mastermind
         /// <summary>
         /// Integer array used to hold value of player two guesses.
         /// </summary>
-        public int[] Data { get; set; }
+        public int[] Data;
 
         /// <summary>
         /// The next Node value in the linked list.
         /// </summary>
-        public Node NextNode = null;
+        public Node NextNode;
+
+        /// <summary>
+        /// Node constructor function.
+        /// </summary>
+        public Node(int[] d, Node n)
+        {
+            Data = d;
+            NextNode = n;
+        }
     }
 
     /// <summary>
@@ -87,6 +96,11 @@ namespace Mastermind
         private static bool codeCracked = false;
 
         /// <summary>
+        /// Dynamic linked list used to store all guesses input by Player Two.
+        /// </summary>
+        private static LinkedList previousGuesses = new LinkedList();
+
+        /// <summary>
         /// Variable to store the most recent guess to crack the code submitted by Player 2.
         /// </summary>
         private static int[] playerTwosMostRecentGuess;
@@ -97,20 +111,9 @@ namespace Mastermind
             playerOnesCode = TakeCodeToCrack();
             Console.WriteLine("\nGreat! Your input has been logged.");
 
-            // Configure Linked List.
-            LinkedList previousGuesses = new LinkedList();
-
             // Begin taking guesses from player two.
             while ((!codeCracked) && (remainingGuesses >= 0))
             {
-                // Start recording player twos's guesses in linked list.
-                if (!previousGuesses.Initialized)
-                {
-                    previousGuesses.ListHead.Data = playerTwosMostRecentGuess;
-                    previousGuesses.ListHead.NextNode = null;
-                    previousGuesses.Initialized = true;
-                }
-
                 // Get guess from player two.
                 string[] userGuess = TakeGuess();
 
@@ -131,13 +134,14 @@ namespace Mastermind
                 }
 
                 // Add most recent guess to linked list of guesses.
-                Node newNode = new Node();
-                newNode.Data = playerTwosMostRecentGuess;
-                previousGuesses.AddNode(newNode);
+                previousGuesses.AddNode(new Node(playerTwosMostRecentGuess, null));
             }
 
             if (codeCracked)
             {
+                // Add correct guess to linked list of guesses.
+                previousGuesses.AddNode(new Node(playerTwosMostRecentGuess, null));
+
                 // Player two has cracked the code.
                 PlayerTwoWins(previousGuesses);
             }
@@ -304,6 +308,7 @@ namespace Mastermind
         /// <summary>
         /// Method called when the Player 2 has run out of attempts to crack the code.
         /// </summary>
+        /// <param name="allGuesses"></param>
         static void PlayerOneWins(LinkedList allGuesses)
         {
             Console.WriteLine("\n\nPLAYER ONE WINS!\n\nPLAYER TWO HAS RUN OUT OF GUESSES.\n\n");
@@ -318,6 +323,7 @@ namespace Mastermind
         /// <summary>
         /// Method called when Player 2 successfully cracked the code.
         /// </summary>
+        /// <param name="allGuesses"></param>
         static void PlayerTwoWins(LinkedList allGuesses)
         {
             Console.WriteLine("\n\nPLAYER TWO WINS!\n\nPLAYER TWO HAS CRACKED THE CODE.\n\n");
@@ -332,16 +338,17 @@ namespace Mastermind
         /// <summary>
         /// Method to traverse linked list and return out all of the guesses made by Player 2.
         /// </summary>
+        /// <param name="ListStructure"></param>
         /// <returns></returns>
-        static List<int[]> ObtainGuesses(LinkedList ListStructure)
+        static List<Node> ObtainGuesses(LinkedList ListStructure)
         {
-            List<int[]> data = new List<int[]>();
+            List<Node> data = new List<Node>();
 
             Node currentNode = ListStructure.ListHead;
 
             while (currentNode.NextNode != null)
             {
-                data.Add(currentNode.Data);
+                data.Add(currentNode);
 
                 currentNode = currentNode.NextNode;
             }
@@ -352,11 +359,25 @@ namespace Mastermind
         /// <summary>
         /// Method to format the integer arrays into string displayable within the console.
         /// </summary>
-        /// <param name="guesses"></param>
+        /// <param name="allNodes"></param>
         /// <returns></returns>
-        static string FormatGuesses(List<int[]> guesses)
+        static string FormatGuesses(List<Node> allNodes)
         {
-            return guesses.Count.ToString();
+            List<string> formattedOutput = new List<string>();
+
+            for (int i = 0; i < allNodes.Count; i++)
+            {
+                string formattedString = "";
+
+                for (int j = 0; j < allNodes[i].Data.Length; j++)
+                {
+                    formattedString += allNodes[i].Data[j].ToString();
+                }
+
+                formattedOutput.Add(formattedString);
+            }
+
+            return String.Join("\n\n", formattedOutput);
         }
     }
 }
