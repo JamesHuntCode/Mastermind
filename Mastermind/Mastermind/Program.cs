@@ -29,15 +29,23 @@ namespace Mastermind
         {
             Node currentNode = ListHead;
 
-            while (currentNode.NextNode != null)
+            if (currentNode.NextNode == null)
             {
-                if (currentNode.NextNode == null)
+                currentNode.NextNode = newNode;
+                newNode.NextNode = null;
+            }
+            else
+            {
+                while (currentNode.NextNode != null)
                 {
-                    currentNode.NextNode = newNode;
-                    newNode.NextNode = null;
-                }
+                    if (currentNode.NextNode == null)
+                    {
+                        currentNode.NextNode = newNode;
+                        newNode.NextNode = null;
+                    }
 
-                currentNode = currentNode.NextNode;
+                    currentNode = currentNode.NextNode;
+                }
             }
         }
     }
@@ -94,7 +102,7 @@ namespace Mastermind
 
             // Begin taking guesses from player two.
             while ((!codeCracked) && (remainingGuesses >= 0))
-            {        
+            {
                 string[] userGuess = TakeGuess();
 
                 codeCracked = CompareArrays(playerTwosMostRecentGuess, playerOnesCode);
@@ -103,7 +111,7 @@ namespace Mastermind
                 if (!previousGuesses.Initialized)
                 {
                     previousGuesses.ListHead.Data = playerTwosMostRecentGuess;
-                    previousGuesses.ListHead.NextNode = new Node();
+                    previousGuesses.ListHead.NextNode = null;
                     previousGuesses.Initialized = true;
                 }
 
@@ -120,12 +128,12 @@ namespace Mastermind
                     Console.WriteLine("\nYour guess was incorrect. You have " + remainingGuesses.ToString() + " lives remaining. Try again.\n");
                     Console.WriteLine("\n" + String.Join(" ", userGuess) + "\n\n");
                 }
-            }
 
-            // Push guess to linked list of guesses.
-            Node guessNode = new Node();
-            guessNode.Data = playerTwosMostRecentGuess;
-            previousGuesses.AddNode(guessNode);
+                // Push most recent guess to linked list of guesses.
+                Node guessNode = new Node();
+                guessNode.Data = playerTwosMostRecentGuess;
+                previousGuesses.AddNode(guessNode);
+            }
 
             if (codeCracked)
             {
@@ -326,22 +334,18 @@ namespace Mastermind
         /// <returns></returns>
         static List<int[]> ObtainGuesses(LinkedList ListStructure)
         {
-            List<int[]> guesses = new List<int[]>();
+            List<int[]> data = new List<int[]>();
 
-            // Get starting node.
             Node currentNode = ListStructure.ListHead;
 
-            // Iterate through all nodes and save values.
             while (currentNode.NextNode != null)
             {
-                // Fetch data.
-                guesses.Add(currentNode.Data);
+                data.Add(currentNode.Data);
 
-                // Update current node.
                 currentNode = currentNode.NextNode;
             }
 
-            return guesses;
+            return data;
         }
 
         /// <summary>
@@ -351,19 +355,21 @@ namespace Mastermind
         /// <returns></returns>
         static string FormatGuesses(List<int[]> guesses)
         {
-            string formattedOutput = "";
+            List<string> formattedGuesses = new List<string>();
 
             for (int i = 0; i < guesses.Count; i++)
             {
-                string formattedGuess = "";
+                List<string> str = new List<string>();
 
-                for (int j = 0; j < guesses[i].Count(); j++)
+                for (int j = 0; j < guesses[i].Length; j++)
                 {
-                    formattedGuess += guesses[i][j].ToString();
+                    str.Add(guesses[i][j].ToString());
                 }
+
+                formattedGuesses.Add(String.Join("", str));
             }
 
-            return formattedOutput;
+            return String.Join("\n", formattedGuesses);
         }
     }
 }
